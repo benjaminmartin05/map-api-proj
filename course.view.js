@@ -127,33 +127,27 @@ var map;
         this.location = data.location;
         this.wikiInfo = "";
         this.visible = ko.observable(true);
-        //change prop back to text if this doesnt work
-        var wikiUrl = "http://en.wikipedia.org/w/api.php?action=parse&format=json&prop=text&section=0&page="+ this.title +"&callback=?";
-        // var wikiUrl="https://en.wikipedia.org/w/api.php";
-        //   wikiUrl += '?' + $.param({
-        //   'action': "query",
-        //   'titles': this.title,
-        //   'format': "json",
-        //   'prop': "pageimages"
-        //   'piprop': "thumbnail",
-        //   'callback': 'wikiCallback'
-        //  });
+
+// var wikiUrl = "https://en.wikipedia.org/w/api.php?action=parse&format=json&prop=text&section=0&page="+ this.title +"&callback=?";
+var wikiUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&search=' + this.title +  '&format=json';
 // Assign handlers immediately after making the request,
 // and remember the jqXHR object for this request
 var jqxhr = $.ajax({
               type: "GET",
               url: wikiUrl,
-              contentType: "application/json; charset=utf-8",
+              contentType: "application/jsonp; charset=utf-8; image/jpg",
               async: false,
-              dataType: "json"
+              dataType: "jsonp"
             })
             .done(function(data, textStatus, jqXHR) {
-              var str = data.parse.title;
-              str = str.replace(/\s/g,'_');
-              self.wikiLink = "https://en.wikipedia.org/wiki/" + str;
-              self.wikiInfo = data.parse.text["*"];
+              // var str = data.parse.title;
+              // str = str.replace(/\s/g,'_');
+              // self.wikiLink = "https://en.wikipedia.org/wiki/" + str;
+              // self.wikiInfo = data.parse.text["*"];
+              self.wikiLink = data[3];
+              self.wikiInfo = data[2];
               console.log(data);
-            })
+             })
             .fail(function() {
               alert( "Loading error. Please try again." );
             })
@@ -184,8 +178,6 @@ var jqxhr = $.ajax({
              '<div class="rank">Course Rank: '+ data.rank + "</div>" +
              '<div class="year">Year Opened: '+ data.yrOpen + "</div>" +
              '<div class="wikipedia">'+ self.wikiInfo + "</div></div>";
-
-
 
             self.infoWindow.setContent(self.information);
 
