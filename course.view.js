@@ -154,11 +154,14 @@ var jqxhr = $.ajax({
 
         this.infoWindow = new google.maps.InfoWindow({content: self.information});
 
+        var iconBase = 'https://maps.google.com/mapfiles/kml/shapes/';
+
         this.marker = new google.maps.Marker({
                 position: new google.maps.LatLng(data.location),
                 map: map,
                 title: data.title,
-                animation: google.maps.Animation.DROP
+                animation: google.maps.Animation.DROP,
+                icon: iconBase + 'golf_maps.png'
         });
 
         this.showMarker = ko.computed(function() {
@@ -186,10 +189,10 @@ var jqxhr = $.ajax({
             self.marker.setAnimation(google.maps.Animation.BOUNCE);
             setTimeout(function() {
                 self.marker.setAnimation(null);
-            }, 2100);
+            }, 3000);
         });
 
-        this.bounce = function(place) {
+        this.bounce = function() {
             google.maps.event.trigger(self.marker, 'click');
         };
 
@@ -269,9 +272,7 @@ var styles = [
 
     function viewModel() {
         var self = this;
-
         this.searchTerm = ko.observable("");
-
         this.courseList = ko.observableArray([]);
 
         map = new google.maps.Map(document.getElementById('map'), {
@@ -285,20 +286,13 @@ var styles = [
         });
 
         this.filteredList = ko.computed( function() {
-            var filter = self.searchTerm().toLowerCase();
-            if (!filter) {
-                self.courseList().forEach(function(location){
-                    location.visible(true);
-                });
-                return self.courseList();
-            } else {
-                return ko.utils.arrayFilter(self.courseList(), function(location) {
-                    var string = location.title.toLowerCase();
-                    var searchedCourse = (string.search(filter) >= 0);
-                    location.visible(searchedCourse);
-                    return searchedCourse;
-                });
-            }
+            return ko.utils.arrayFilter(self.courseList(), function(location) {
+                var string = location.title.toLowerCase();
+                var searchItem = self.searchTerm().toLowerCase();
+                var searchedCourse = (string.search(searchItem) >= 0);
+                location.visible(searchedCourse);
+                return searchedCourse;
+            });
         }, self);
 
     };
