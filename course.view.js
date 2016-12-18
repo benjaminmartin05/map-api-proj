@@ -132,6 +132,7 @@ var map;
 var wikiUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&search=' + this.title +  '&format=json';
 // Assign handlers immediately after making the request,
 // and remember the jqXHR object for this request
+var showPopUp = false;
 var jqxhr = $.ajax({
               type: "GET",
               url: wikiUrl,
@@ -144,12 +145,15 @@ var jqxhr = $.ajax({
               // str = str.replace(/\s/g,'_');
               // self.wikiLink = "https://en.wikipedia.org/wiki/" + str;
               // self.wikiInfo = data.parse.text["*"];
-              self.wikiLink = data[3];
-              self.wikiInfo = data[2];
+              self.wikiLink = data[3] || 'No information available';
+              self.wikiInfo = data[2] || 'No information available';
               console.log(data);
              })
             .fail(function() {
-              alert( "Loading error. Please try again." );
+                if(!showPopUp){
+                    alert( "Loading error. Please try again." );
+                    showPopUp = true;
+                }
             })
 
         this.infoWindow = new google.maps.InfoWindow({content: self.information});
@@ -182,8 +186,8 @@ var jqxhr = $.ajax({
              '<div class="year">Year Opened: '+ data.yrOpen + "</div>" +
              '<div class="wikipedia">'+ self.wikiInfo + "</div></div>";
 
-            self.infoWindow.setContent(self.information);
 
+            self.infoWindow.setContent(self.information);
             self.infoWindow.open(map, this);
 
             self.marker.setAnimation(google.maps.Animation.BOUNCE);
